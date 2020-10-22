@@ -28,5 +28,31 @@ Full_Ramen.drop('Review #', inplace=True, axis=1)
 
 Full_Ramen
 #%%
+URL = Full_Ramen['URL'][0]
+html = req.get(URL).text
+ramen_soup = bs(html, 'html.parser')
 
+#%%
+Full_Ramen['Blurb'] = ''
 for index, row in Full_Ramen.iterrows():
+    try:
+        URL = row['URL']
+        html = req.get(URL).text
+        ramen_soup = bs(html, 'html.parser')
+        x = 'Some sort of error'
+        for i in ramen_soup.find_all('p'):
+            try:
+                x = i.text
+                x = x.split(' ')
+                if x[0] == 'Finished':
+                    Full_Ramen.loc[index,'Blurb'] = i.text
+                    print(i.text)
+                    break
+            except:
+                pass
+        
+    except:
+        Full_Ramen.loc[index,'Blurb'] = "Double check URL"
+    print(f"finished parsing index# {index}")  
+# %%
+Full_Ramen.to_csv('Full_Ramen.csv')
