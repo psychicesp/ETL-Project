@@ -48,9 +48,12 @@ for index, row in Full_Ramen.iterrows():
         html = req.get(URL).text
         ramen_soup = bs(html, 'html.parser')
     except:
-        URL = 'https://' + row['URL']
-        html = req.get(URL).text
-        ramen_soup = bs(html, 'html.parser')
+        try:
+            URL = 'https://' + row['URL']
+            html = req.get(URL).text
+            ramen_soup = bs(html, 'html.parser')
+        except:
+            Full_Ramen.loc[index, 'Blurb'] = "Issue with URL"
     alphabet_soup = ramen_soup.find_all('p'):
         #    First pass, tries to find the <p> of interest based on a common opener 'Finished (click to enlarge).
         # Simply using parenthesis has some weird bycatch.
@@ -115,7 +118,7 @@ for index, row in Full_Ramen.iterrows():
                                             break
                                 except:
                                     Full_Ramen.loc[index,
-                                                   'Blurb'] = "Scrape Unsuccessful"
+                                                   'Blurb'] = "Issue with Scrape"
 
     except:
         Full_Ramen.loc[index, 'Blurb'] = "Scrape Unsuccessful"
