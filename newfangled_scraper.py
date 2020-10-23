@@ -65,7 +65,7 @@ for index, row in Full_Ramen.iterrows():
                     x = x.split('(click to enlarge)')
                     if x[0] == 'Finished ':
                         Full_Ramen.loc[index, 'Blurb'] = i.text
-                        print('First Pass ftw')
+                        print('---First Pass FTW!!')
                         print(i.text)
                         break
                 except:
@@ -78,7 +78,7 @@ for index, row in Full_Ramen.iterrows():
                     x = x.split('(click image to enlarge)')
                     if x[0] == 'Finished ':
                         Full_Ramen.loc[index, 'Blurb'] = i.text
-                        print('Second pass ftw')
+                        print('---Second pass with the assist!!!')
                         print(i.text)
                         break
                 except:
@@ -95,13 +95,13 @@ for index, row in Full_Ramen.iterrows():
                         x[-1] = x[-1].replace('>', '')
                         x[-1] = x[-1].replace(' ', '')
                         if x[-1] == 'stars':
-                            print('Third pass ftw')
+                            print('---Third pass for the spare!!')
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
                         x[-1] = int(x[-1])
                         if x[-1] > 1000000:
-                            print('Third pass ftw')
+                            print('---Third pass for the spare!!')
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
@@ -116,12 +116,12 @@ for index, row in Full_Ramen.iterrows():
                     x = x.split(' ')
                     x[-1] = x[-1].replace('.', '')
                     if x[0] == 'Click':
-                        print('Fourth pass ftw')
+                        print('---Fourth pass to the rescue!!')
                         print(i.text)
                         Full_Ramen.loc[index, 'Blurb'] = i.text
                         break
                     elif x[-2] == 'it' and x[-1] == 'here':
-                        print('Fourth pass ftw')
+                        print('---Fourth pass to the rescue!!')
                         print(i.text)
                         Full_Ramen.loc[index, 'Blurb'] = i.text
                         break
@@ -139,7 +139,7 @@ for index, row in Full_Ramen.iterrows():
                         Full_Ramen.loc[index, 'Blurb'] = i.text
                     # No break statement in hopes that it finds the last long paragraph
                 except:
-                    print('oh well... fifth pass got something.')
+                    print('ok well... fifth pass got ...something')
                     print(i.text)
                     Full_Ramen.loc[index, 'Blurb'] = "Scrape"
 
