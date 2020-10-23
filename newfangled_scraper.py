@@ -157,3 +157,4 @@ for index, row in Full_Ramen.iterrows():
 #    This ends with few enough rows unsuccessful rows that the remainder can either be ignored or manually scraped
 # without much cost of time or lost data.
 # %%
+Full_Ramen.to_csv('Newfangled_Ramen.csv')
