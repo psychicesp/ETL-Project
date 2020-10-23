@@ -107,8 +107,7 @@ for index, row in Full_Ramen.iterrows():
                     pass
             
         except:
-            Full_Ramen.loc[index,'Blurb'] = "Some weird issue"
-    print(f"finished parsing index #{index}")  
+            Full_Ramen.loc[index,'Blurb'] = "Some weird issue" 
 
 #%%
 Full_Ramen.to_csv('Full_Ramen.csv')
