@@ -29,9 +29,14 @@ Full_Ramen.drop('Review #', inplace=True, axis=1)
 #    Original scraping was done in about four passes, each one targeting rows which were missed by previous passes.
 # I would have stuck with this structure except that some of the methods resulted is some very weird 'bycatch'
 # resulting in the necessity to scrape from scratch (ugh).
-#    I took this as an opportunity to marry all scrape methods into a single pass with minimal redundant HTML requests.
+#
+#     I took this as an opportunity to marry all scrape methods into a single pass with minimal redundant HTML requests.
+#
+#    These need to be pretty impeccible, however, as the bycatch from any particular method might prevent a later, better method from
+# running
 Full_Ramen['Blurb'] = ''
 for index, row in Full_Ramen.iterrows():
+# There are two different URL formats.  We could correct this in the DF but went this route instead.
     try:
         URL = row['URL']
         html = req.get(URL).text
@@ -40,6 +45,8 @@ for index, row in Full_Ramen.iterrows():
         URL = 'https://' + row['URL']
             html = req.get(URL).text
             ramen_soup = bs(html, 'html.parser')
+#    First pass, tries to find the <p> of interest based on a common opener 'Finished (click to enlarge).
+# Simply using parenthesis has some weird bycatch.
     try:
         for i in ramen_soup.find_all('p'):
             try:
@@ -50,6 +57,7 @@ for index, row in Full_Ramen.iterrows():
                     print(i.text)
                     break
             except:
+# Second Pass, exploiting the large portion of pages where the <p> of interest begins with 'Finished (click image to enlarge)'
                 try:
                     x = i.text
                     x = x.split('(click image to enlarge)')
@@ -58,6 +66,8 @@ for index, row in Full_Ramen.iterrows():
                         print(i.text)
                         break
                 except:
+#    Third pass - the last-ditch - the <p> of interest often ends with a long barcode, 
+# and where there is no barcode it ends with '_ out of 5 stars.'
                     try: x = i.text
                     x = x.split(' ')
                     x[-1] = x[-1].replace('.','')
@@ -74,5 +84,7 @@ for index, row in Full_Ramen.iterrows():
                         pass
     except:
         Full_Ramen.loc[index,'Blurb'] = "Scrape Unsuccessful"
-    print(f"finished parsing index# {index}")  
+    print(f"finished parsing index# {index}")
+#    This ends with few enough rows unsuccessful rows that the remainder can either be ignored or manually scraped
+# without much cost of time or lost data.
 # %%
