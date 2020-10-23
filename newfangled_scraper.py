@@ -40,7 +40,7 @@ Full_Ramen.drop('Review #', inplace=True, axis=1)
 #   I looped through one method completely before moving on to the next so that I could arrange them from least to most
 # likely to have bycatch. It feels very inefficient to me but is necessary prevent bycatch breaking the loop before it can move onto a
 # better method
-Full_Ramen['Blurb'] = ''
+Full_Ramen['Blurb'] = 'Scrape'
 for index, row in Full_Ramen.iterrows():
     # There are two different URL formats.  We could correct this in the DF but went this route instead.
     try:
@@ -54,33 +54,38 @@ for index, row in Full_Ramen.iterrows():
             ramen_soup = bs(html, 'html.parser')
         except:
             Full_Ramen.loc[index, 'Blurb'] = "Issue with URL"
-    alphabet_soup = ramen_soup.find_all('p'):
+    alphabet_soup = ramen_soup.find_all('p')
         #    First pass, tries to find the <p> of interest based on a common opener 'Finished (click to enlarge).
-        # Simply using parenthesis has some weird bycatch.
+        # Simply using '(' has some weird bycatch so I was much more specific.
     try:
-        try:
+        if row['Blurb'] == 'Scrape':
             for i in alphabet_soup:
-                x = i.text
-                x = x.split('(click to enlarge)')
-                if x[0] == 'Finished ':
-                    Full_Ramen.loc[index, 'Blurb'] = i.text
-                    print(i.text)
-                    break
-        except:
+                try:
+                    x = i.text
+                    x = x.split('(click to enlarge)')
+                    if x[0] == 'Finished ':
+                        Full_Ramen.loc[index, 'Blurb'] = i.text
+                        print(i.text)
+                        break
+                except:
+                    pass
             # Second Pass, exploiting the large portion of pages where the <p> of interest begins with 'Finished (click image to enlarge)'
-            try:
-                for i in alphabet_soup:
+        if row['Blurb'] == 'Scrape':
+            for i in alphabet_soup:
+                try:
                     x = i.text
                     x = x.split('(click image to enlarge)')
                     if x[0] == 'Finished ':
                         Full_Ramen.loc[index, 'Blurb'] = i.text
                         print(i.text)
                         break
-            except:
+                except:
+                    pass
                 #    Third pass the <p> of interest often ends with a long barcode,
                 # and where there is no barcode it often ends with '_ out of 5 stars.' or '_ stars.'
-                try:
-                    for i in alphabet_soup:
+        if row['Blurb'] == 'Scrape':
+            for i in alphabet_soup:
+                    try:
                         x = i.text
                         x = x.split(' ')
                         x[-1] = x[-1].replace('.', '')
@@ -93,35 +98,39 @@ for index, row in Full_Ramen.iterrows():
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
-                        except:
-                            #    Fourth pass: The earliest trend on the early days of the site is where the <p> of interest begins with 'Click'
-                            # This is very likely to have bycatch so it is near the last.
-                            try:
-                                for i in alphabet_soup:
-                                    x = i.text
-                                    x = x.split(' ')
-                                    if x[0] == 'Click':
-                                        Full_Ramen.loc[index, 'Blurb'] = i.text
-                                        break
-                                    elif len(x) > 40
-                            except:
-                                #    Fifth pass - the last ditch: If the paragraph is long, maybe its the one we're looking for.
-                                # This is BY FAR the most likely to have bycatch so it is the last one.
-                                # If this finds the wrong value, we were very unlikely to find the right one.
-                                try:
-                                    for i in alphabet_soup:
-                                        x = i.text
-                                        x = x.split(' ')
-                                        if len(x) > 40:
-                                            Full_Ramen.loc[index,
-                                                           'Blurb'] = i.text
-                                            break
-                                except:
-                                    Full_Ramen.loc[index,
-                                                   'Blurb'] = "Issue with Scrape"
+                    except:
+                        pass
+                    #    Fourth pass: The earliest trend on the early days of the site is where the <p> of interest begins with 'Click' or ends with 'find it here.'
+                    # This is very likely to have bycatch so it is near the last.
+        if row['Blurb'] == 'Scrape':
+            for i in alphabet_soup:
+                try:
+                    x = i.text
+                    x = x.split(' ')
+                    if x[0] == 'Click':
+                        Full_Ramen.loc[index, 'Blurb'] = i.text
+                        break
+                    elif x[-2] == 'it' and x[-1] == 'here.':
+                        Full_Ramen.loc[index, 'Blurb'] = i.text
+                        break
+                except:
+                    pass
+                #    Fifth pass - the last ditch: If the paragraph is long, maybe its the one we're looking for.
+                # This is BY FAR the most likely to have bycatch so it is the last one.
+                # If this finds the wrong value, we were very unlikely to find the right one.
+        if row['Blurb'] == 'Scrape':
+            for i in alphabet_soup:
+                try:
+                    x = i.text
+                    x = x.split(' ')
+                    if len(x) > 40:
+                        Full_Ramen.loc[index, 'Blurb'] = i.text
+                    # No break statement in hopes that it finds the last long paragraph
+                except:
+                    Full_Ramen.loc[index, 'Blurb'] = "Scrape"
 
     except:
-        Full_Ramen.loc[index, 'Blurb'] = "Scrape Unsuccessful"
+        Full_Ramen.loc[index, 'Blurb'] = "Scrape"
     print(f"finished parsing index# {index}")
 #    This ends with few enough rows unsuccessful rows that the remainder can either be ignored or manually scraped
 # without much cost of time or lost data.
