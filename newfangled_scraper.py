@@ -2,6 +2,7 @@
 import pandas as pd
 from bs4 import BeautifulSoup as bs
 import requests as req
+import time
 # %%
 Ramen1 = pd.read_csv('Ramen_Ratings_1.csv')
 Ramen2 = pd.read_csv('Ramen_Ratings_2.csv')
