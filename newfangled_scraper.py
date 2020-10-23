@@ -54,6 +54,7 @@ for index, row in Full_Ramen.iterrows():
             ramen_soup = bs(html, 'html.parser')
         except:
             Full_Ramen.loc[index, 'Blurb'] = "Issue with URL"
+    time.sleep(1)
     alphabet_soup = ramen_soup.find_all('p')
     #    First pass, tries to find the <p> of interest based on a common opener 'Finished (click to enlarge).
     # Simply using '(' has some weird bycatch so I was much more specific.
