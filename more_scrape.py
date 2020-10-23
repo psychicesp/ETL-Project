@@ -17,7 +17,7 @@ for index, row in Full_Ramen.iterrows():
 
 
 #%%
-#Third Pass
+#Third Pass.  This will try and catch those which used a different formatting in the past, based on teh fact that a long barcode is often last and when there is no barcode the last word is 'stars.'
 for index, row in Full_Ramen.iterrows():
     if row['Blurb'] == 'Scrape':
         try:
@@ -45,8 +45,9 @@ for index, row in Full_Ramen.iterrows():
             Full_Ramen.loc[index,'Blurb'] = "Scrape"
     print(f"finished parsing index #{index}") 
 # %%
-#Fourth Pass
-Full_Ramen['Blurb'] = ''
+Full_Ramen.to_csv('Full_Ramen.csv')
+#%%
+#Fourth Pass.  If this one doesn't grab the last of them I'll call it a day
 for index, row in Full_Ramen.iterrows():
     if row['Blurb'] == 'Scrape':
         try:

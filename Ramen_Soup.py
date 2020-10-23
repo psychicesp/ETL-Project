@@ -52,6 +52,11 @@ for index, row in Full_Ramen.iterrows():
         URL = row['URL']
         html = req.get(URL).text
         ramen_soup = bs(html, 'html.parser')
+    except:
+        URL = 'https://' + row['URL']
+            html = req.get(URL).text
+            ramen_soup = bs(html, 'html.parser')
+    try:
         for i in ramen_soup.find_all('p'):
             try:
                 x = i.text
@@ -61,10 +66,30 @@ for index, row in Full_Ramen.iterrows():
                     print(i.text)
                     break
             except:
-                pass
-        
+                try:
+                    x = i.text
+                    x = x.split('(click image to enlarge)')
+                    if x[0] == 'Finished ':
+                        Full_Ramen.loc[index,'Blurb'] = i.text
+                        print(i.text)
+                        break
+                except:
+                    try: x = i.text
+                    x = x.split(' ')
+                    x[-1] = x[-1].replace('.','')
+                    if x[-1] == 'stars':
+                        print(i.text)
+                        Full_Ramen.loc[index,'Blurb'] = i.text
+                        break
+                    x[-1] = int(x[-1])
+                    if x[-1]> 100000:
+                        print(i.text)
+                        Full_Ramen.loc[index,'Blurb'] = i.text
+                        break                        
+                    except:
+                        pass
     except:
-        Full_Ramen.loc[index,'Blurb'] = "Double check URL"
+        Full_Ramen.loc[index,'Blurb'] = "Scrape Unsuccessful"
     print(f"finished parsing index# {index}")  
 # %%
 # Second Pass, will get info from urls input without 'https://'
@@ -102,7 +127,10 @@ for index, row in Full_Ramen.iterrows():
 
 #%%
 #   Third Pass.  This will try and catch those which used a different formatting in the past, based on the fact 
-#that a long barcode is often last and when there is no barcode the last word is often 'stars.'
+# that a long barcode is often last and when there is no barcode the last word is often 'stars.'
+# Early reviews seem to end with 'find it here.' which I missed.  
+# The early revision has some significant bycatch of other columns going into histories because these end in a date.
+# This has been fixed by 
 for index, row in Full_Ramen.iterrows():
     if row['Blurb'] == 'Scrape':
         try:
@@ -134,7 +162,7 @@ for index, row in Full_Ramen.iterrows():
 #   Fourth Pass.  If this one doesn't grab the last of them I'll call it a day.
 #If making a holistic, single-pass I would probably combine this method with the first
 #and the second, ignoring the third.  It appears this net will catch everything caught
-#by the third without the baggage of the thirds bycatch.
+#by the third method without the baggage of the thirds bycatch.
 
 for index, row in Full_Ramen.iterrows():
     if row['Blurb'] == 'Scrape':
