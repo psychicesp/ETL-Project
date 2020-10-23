@@ -58,7 +58,7 @@ for index, row in Full_Ramen.iterrows():
     #    First pass, tries to find the <p> of interest based on a common opener 'Finished (click to enlarge).
     # Simply using '(' has some weird bycatch so I was much more specific.
     try:
-        if row['Blurb'] == 'Scrape':
+        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
             for i in alphabet_soup:
                 try:
                     x = i.text
@@ -71,7 +71,7 @@ for index, row in Full_Ramen.iterrows():
                 except:
                     pass
         # Second Pass, exploiting the large portion of pages where the <p> of interest begins with 'Finished (click image to enlarge)'
-        if row['Blurb'] == 'Scrape':
+        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
             for i in alphabet_soup:
                 try:
                     x = i.text
@@ -85,7 +85,7 @@ for index, row in Full_Ramen.iterrows():
                     pass
         #    Third pass the <p> of interest often ends with a long barcode,
         # and where there is no barcode it often ends with '_ out of 5 stars.' or '_ stars.'
-        if row['Blurb'] == 'Scrape':
+        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
             for i in alphabet_soup:
                     try:
                         x = i.text
@@ -95,13 +95,13 @@ for index, row in Full_Ramen.iterrows():
                         x[-1] = x[-1].replace('>', '')
                         x[-1] = x[-1].replace(' ', '')
                         if x[-1] == 'stars':
-                            print('---Third pass for the spare!!')
+                            print('---Third pass with the spare!!')
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
                         x[-1] = int(x[-1])
                         if x[-1] > 1000000:
-                            print('---Third pass for the spare!!')
+                            print('---Third pass with the spare!!')
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
@@ -109,7 +109,7 @@ for index, row in Full_Ramen.iterrows():
                         pass
         #    Fourth pass: The earliest trend on the early days of the site is where the <p> of interest begins with 'Click' or ends with 'find it here.'
         # This is very likely to have bycatch so it is near the last.
-        if row['Blurb'] == 'Scrape':
+        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
             for i in alphabet_soup:
                 try:
                     x = i.text
@@ -130,27 +130,29 @@ for index, row in Full_Ramen.iterrows():
         #    Fifth pass - the last ditch: If the paragraph is long, maybe its the one we're looking for.
         # This is BY FAR the most likely to have bycatch so it is the last one.
         # If this finds the wrong value, we were very unlikely to find the right one in an automated way.
-        if row['Blurb'] == 'Scrape':
+        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
             for i in alphabet_soup:
                 try:
                     x = i.text
                     x = x.split(' ')
-                    if len(x) > 40:
+                    if len(x) > 50:
+                        print('ok well... fifth pass got ...something')
                         Full_Ramen.loc[index, 'Blurb'] = i.text
-                    # No break statement in hopes that it finds the last long paragraph
+                        break
                 except:
-                    print('ok well... fifth pass got ...something')
+                    print('---We never stood a chance')
                     print(i.text)
                     Full_Ramen.loc[index, 'Blurb'] = "Scrape"
 
     except:
-        print('We never stood a chance')
+        print('---We never stood a chance')
         Full_Ramen.loc[index, 'Blurb'] = "Scrape"
+    print('---')
+    print(f"finished parsing index# {index}")
     print('''
     --------------------
     --------------------
     --------------------''')
-    print(f"finished parsing index# {index}")
 #    This ends with few enough rows unsuccessful rows that the remainder can either be ignored or manually scraped
 # without much cost of time or lost data.
 # %%
