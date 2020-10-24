@@ -55,7 +55,7 @@ for index, row in Full_Ramen.iterrows():
             ramen_soup = bs(html, 'html.parser')
         except:
             Full_Ramen.loc[index, 'Blurb'] = "Issue with URL"
-    time.sleep(1)
+    time.sleep(0.1)
     alphabet_soup = ramen_soup.find_all('p')
     #    First pass, tries to find the <p> of interest based on a common opener 'Finished (click to enlarge).
     # Simply using '(' has some weird bycatch so I was much more specific.
@@ -107,6 +107,11 @@ for index, row in Full_Ramen.iterrows():
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
+                        if x[0] == "Notes:":
+                            print('---Third pass with the spare!!')
+                            print(i.text)
+                            Full_Ramen.loc[index, 'Blurb'] = i.text
+                            break
                     except:
                         pass
         #    Fourth pass: The earliest trend on the early days of the site is where the <p> of interest begins with 'Click' or ends with 'find it here.'
@@ -117,12 +122,7 @@ for index, row in Full_Ramen.iterrows():
                     x = i.text
                     x = x.split(' ')
                     x[-1] = x[-1].replace('.', '')
-                    if x[0] == 'Click':
-                        print('---Fourth pass to the rescue!!')
-                        print(i.text)
-                        Full_Ramen.loc[index, 'Blurb'] = i.text
-                        break
-                    elif x[-2] == 'it' and x[-1] == 'here':
+                    if x[-2] == 'it' and x[-1] == 'here':
                         print('---Fourth pass to the rescue!!')
                         print(i.text)
                         Full_Ramen.loc[index, 'Blurb'] = i.text
