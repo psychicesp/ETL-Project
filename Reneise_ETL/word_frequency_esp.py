@@ -34,9 +34,9 @@ def bar_code_getter(x):
                 if 'EAN' in y[1] or 'EAN' in y[0]:
                     oup_dict['EAN'] = barcode
                 if 'JAN' in y[1] or 'JAN' in y[0]:
-                oup_dict['JAN'] = barcode
+                    oup_dict['JAN'] = barcode
                 if 'UPC' in y[1] or 'UPC' in y[0]:
-                oup_dict['UPC'] = barcode
+                    oup_dict['UPC'] = barcode
                 return oup_dict
                 break
         except:
@@ -45,5 +45,5 @@ def bar_code_getter(x):
 
 ramen_df['Barcode'] = ramen_df['Blurb'].apply(bar_code_getter)
 # %%
-ramen_df.to_csv('Newfangled_Ramen.csv')
+ramen_df.to_csv('../Full_Ramen.csv')
 # %%
