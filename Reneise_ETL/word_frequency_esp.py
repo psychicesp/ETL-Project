@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 
-ramen_df = pd.read_csv('../Newfangled_ramen.csv')
+ramen_df = pd.read_csv('../Full_Ramen.csv')
 
 #%%
 
@@ -18,6 +18,28 @@ def word_getter(x):
         ramen_dict[search_word] = number_of_occurences
     return ramen_dict
     
+ramen_df['Blurb_Analysis'] = ramen_df['Blurb'].apply(word_getter)
 
 
+#%%
+
+def bar_code_getter(x):
+    oup_dict = {}
+    x = x.split('.')
+    for i in x:
+        try:
+            y = i.split(' ')
+            barcode = int(y[-1])
+            return
+            if len(y[0]) == 3 and y[1] == 'bar' and y[2] == 'code':
+                oup_dict[x[0]] = barcode
+                return oup_dict
+                break
+        except:
+            pass
+
+
+ramen_df['Barcode'] = ramen_df['Blurb'].apply(bar_code_getter)
+# %%
+ramen_df
 # %%
