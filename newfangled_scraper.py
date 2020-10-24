@@ -42,119 +42,132 @@ Full_Ramen.drop('Review #', inplace=True, axis=1)
 # likely to have bycatch. It feels very inefficient to me but is necessary prevent bycatch breaking the loop before it can move onto a
 # better method
 Full_Ramen['Blurb'] = 'Scrape'
+#%%
 for index, row in Full_Ramen.iterrows():
-    # There are two different URL formats.  We could correct this in the DF but went this route instead.
-    try:
-        URL = row['URL']
-        html = req.get(URL).text
-        ramen_soup = bs(html, 'html.parser')
-    except:
+    if row['Blurb'] == 'Scrape':
+        # There are two different URL formats.  We could correct this in the DF but went this route instead.
         try:
-            URL = 'https://' + row['URL']
+            URL = row['URL']
             html = req.get(URL).text
             ramen_soup = bs(html, 'html.parser')
         except:
-            Full_Ramen.loc[index, 'Blurb'] = "Issue with URL"
-    time.sleep(0.1)
-    alphabet_soup = ramen_soup.find_all('p')
-    #    First pass, tries to find the <p> of interest based on a common opener 'Finished (click to enlarge).
-    # Simply using '(' has some weird bycatch so I was much more specific.
-    try:
-        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
-            for i in alphabet_soup:
-                try:
-                    x = i.text
-                    x = x.split('(click to enlarge)')
-                    if x[0] == 'Finished ':
-                        Full_Ramen.loc[index, 'Blurb'] = i.text
-                        print('---First Pass FTW!!')
-                        print(i.text)
-                        break
-                except:
-                    pass
-        # Second Pass, exploiting the large portion of pages where the <p> of interest begins with 'Finished (click image to enlarge)'
-        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
-            for i in alphabet_soup:
-                try:
-                    x = i.text
-                    x = x.split('(click image to enlarge)')
-                    if x[0] == 'Finished ':
-                        Full_Ramen.loc[index, 'Blurb'] = i.text
-                        print('---Second pass with the assist!!!')
-                        print(i.text)
-                        break
-                except:
-                    pass
-        #    Third pass the <p> of interest often ends with a long barcode,
-        # and where there is no barcode it often ends with '_ out of 5 stars.' or '_ stars.'
-        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
-            for i in alphabet_soup:
+            try:
+                URL = 'https://' + row['URL']
+                html = req.get(URL).text
+                ramen_soup = bs(html, 'html.parser')
+            except:
+                Full_Ramen.loc[index, 'Blurb'] = "Issue with URL"
+        alphabet_soup = ramen_soup.find_all('p')
+        #    First pass, tries to find the <p> of interest based on a common opener 'Finished (click to enlarge).
+        # Simply using '(' has some weird bycatch so I was much more specific.
+        try:
+            if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
+                for i in alphabet_soup:
+                    try:
+                        x = i.text
+                        x = x.split('(click to enlarge)')
+                        if x[0] == 'Finished ':
+                            Full_Ramen.loc[index, 'Blurb'] = i.text
+                            print('---First Pass FTW!!')
+                            print(i.text)
+                            break
+                    except:
+                        pass
+            # Second Pass, exploiting the large portion of pages where the <p> of interest begins with 'Finished (click image to enlarge)'
+            if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
+                for i in alphabet_soup:
+                    try:
+                        x = i.text
+                        x = x.split('(click image to enlarge)')
+                        if x[0] == 'Finished ':
+                            Full_Ramen.loc[index, 'Blurb'] = i.text
+                            print('---Second pass with the assist!!!')
+                            print(i.text)
+                            break
+                    except:
+                        pass
+            #    Third pass the <p> of interest often ends with a long barcode,
+            # and where there is no barcode it often ends with '_ out of 5 stars.' or '_ stars.'
+            if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
+                for i in alphabet_soup:
+                        try:
+                            x = i.text
+                            x = x.split(' ')
+                            x[-1] = x[-1].replace('.', '')
+                            x[-1] = x[-1].replace('<', '')
+                            x[-1] = x[-1].replace('>', '')
+                            x[-1] = x[-1].replace(' ', '')
+                            if x[-1] == 'stars':
+                                print('---Third pass with the spare!!')
+                                print(i.text)
+                                Full_Ramen.loc[index, 'Blurb'] = i.text
+                                break
+                            x[-1] = int(x[-1])
+                            if x[-1] > 1000000:
+                                print('---Third pass with the spare!!')
+                                print(i.text)
+                                Full_Ramen.loc[index, 'Blurb'] = i.text
+                                break
+                            if x[0] == "Notes:":
+                                print('---Third pass with the spare!!')
+                                print(i.text)
+                                Full_Ramen.loc[index, 'Blurb'] = i.text
+                                break
+                        except:
+                            pass
+            #    Fourth pass: The earliest trend on the early days of the site is where the <p> of interest begins with 'Click' or ends with 'find it here.'
+            # This is very likely to have bycatch so it is near the last.
+            if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
+                for i in alphabet_soup:
                     try:
                         x = i.text
                         x = x.split(' ')
-                        x[-1] = x[-1].replace('.', '')
-                        x[-1] = x[-1].replace('<', '')
-                        x[-1] = x[-1].replace('>', '')
-                        x[-1] = x[-1].replace(' ', '')
-                        if x[-1] == 'stars':
-                            print('---Third pass with the spare!!')
+                        if x[-2] == 'Get' and x[-1] == 'it':
+                            print('---Fourth pass to the rescue!!')
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
-                        x[-1] = int(x[-1])
-                        if x[-1] > 1000000:
-                            print('---Third pass with the spare!!')
+                        elif x[-2] == 'it' and x[-1] == 'here.':
+                            print('---Fourth pass to the rescue!!')
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
-                        if x[0] == "Notes:":
-                            print('---Third pass with the spare!!')
+                        elif x[-2] == 'it' and x[-1] == 'here':
+                            print('---Fourth pass to the rescue!!')
                             print(i.text)
                             Full_Ramen.loc[index, 'Blurb'] = i.text
                             break
                     except:
                         pass
-        #    Fourth pass: The earliest trend on the early days of the site is where the <p> of interest begins with 'Click' or ends with 'find it here.'
-        # This is very likely to have bycatch so it is near the last.
-        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
-            for i in alphabet_soup:
-                try:
-                    x = i.text
-                    x = x.split(' ')
-                    x[-1] = x[-1].replace('.', '')
-                    if x[-2] == 'it' and x[-1] == 'here':
-                        print('---Fourth pass to the rescue!!')
+            #    Fifth pass - the last ditch: If the paragraph is long, maybe its the one we're looking for.
+            # This is BY FAR the most likely to have bycatch so it is the last one.
+            # If this finds the wrong value, we were very unlikely to find the right one in an automated way.
+            if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
+                for i in alphabet_soup:
+                    try:
+                        x = i.text
+                        x = x.split(' ')
+                        if len(x) > 50:
+                            print('ok well... fifth pass got ...something')
+                            print(i.text)
+                            Full_Ramen.loc[index, 'Blurb'] = i.text
+                            break
+                    except:
+                        print('---We never stood a chance')
                         print(i.text)
-                        Full_Ramen.loc[index, 'Blurb'] = i.text
-                        break
-                except:
-                    pass
-        #    Fifth pass - the last ditch: If the paragraph is long, maybe its the one we're looking for.
-        # This is BY FAR the most likely to have bycatch so it is the last one.
-        # If this finds the wrong value, we were very unlikely to find the right one in an automated way.
-        if Full_Ramen.loc[index, 'Blurb'] == 'Scrape':
-            for i in alphabet_soup:
-                try:
-                    x = i.text
-                    x = x.split(' ')
-                    if len(x) > 50:
-                        print('ok well... fifth pass got ...something')
-                        Full_Ramen.loc[index, 'Blurb'] = i.text
-                        break
-                except:
-                    print('---We never stood a chance')
-                    print(i.text)
-                    Full_Ramen.loc[index, 'Blurb'] = "Scrape"
+                        Full_Ramen.loc[index, 'Blurb'] = "Scrape"
 
-    except:
-        print('---We never stood a chance')
-        Full_Ramen.loc[index, 'Blurb'] = "Scrape"
-    print('---')
-    print(f"finished parsing index# {index}")
-    print('''
-    --------------------
-    --------------------
-    --------------------''')
+        except:
+            print('---We never stood a chance')
+            Full_Ramen.loc[index, 'Blurb'] = "Scrape"
+        print('---')
+        print(f"finished parsing index# {index}")
+        print('''
+        --------------------
+        --------------------
+        --------------------''')
+    else:
+        pass
 #    This ends with few enough rows unsuccessful rows that the remainder can either be ignored or manually scraped
 # without much cost of time or lost data.
 # %%
