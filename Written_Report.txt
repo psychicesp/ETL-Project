@@ -2,8 +2,7 @@ Eric Penrose, Regan Maher, Reneise White
 10/23/2020
 ETL Project
 Written report
-*******************************************
-RM Edits - 
+
 
 Project Outline:  Provide a Ramen Noodle analaysis ready database.  The data focused on ratings, countries, and words that will provide insight into whether these facotrs have impacts on the ratings.  
 
@@ -29,16 +28,4 @@ Future Questions for Analysis:  This dataset was built to help answer the follow
     3. Are there particular words that are associated with a positive or a negative rating?
     4. Does the length (word count) of a review rating equate to a positive or negative rating?
     5. With the provided bar code information, how does price impact the ratings.  
-********************************************
 
-
-
-Our ETL project is using data concerning ramen ratings from different countries in order to determine if there are any trends that contribute to a good rating vs a bad rating. First, two csv files were pulled and added together. This was done because one csv had a column that the other lacked and vice versa. Next, the data was scraped from https://www.theramenrater.com/ based on the 'URL' column. It is important to note that there were no unique class identifiers and no predictable paragraphs per page which complicated this process. Some questions that could be potentially answered from this data include;
-Which continents manufacture better tasting ramen?
-Are there particular words that are associated with a positive or a negative rating?
-Does the length (word count) of a review rating equate to a positive or negative rating?
-
-
-To go about doing this we have to make a new column that makes a dictionary for each continent that includes all the included countries. 
-
-Another column must also be created that counts the frequency of 10-30 words that are commonly used in the ratings. In order to find the words we iterated through the rows of the csv using the ‘Blurb’ column and removed words that were in a majority of the reviews. Then we put the updated ‘Blurb” column into a word cloud and used the result as the deciding factor of 
