@@ -2,6 +2,36 @@ Eric Penrose, Regan Maher, Reneise White
 10/23/2020
 ETL Project
 Written report
+*******************************************
+RM Edits - 
+
+Project Outline:  Provide a Ramen Noodle analaysis ready database.  The data focused on ratings, countries, and words that will provide insight into whether these facotrs have impacts on the ratings.  
+
+Data Sources:  
+- Kaggle - Ramen Noodle review CSV from theramenrater.com
+- Scraping - theramenrater.com for additional reviews and missing elements from the CSV.
+
+Cleansing and Transformation:
+- Country Clean Up - Some of the country data was misspelled and cities were identified as countries.  Those items needed to be corrected in the data set prior to adding a continent column.
+- Continent Column - Utilized the country column to develope a continent column.
+- Review Word Count - Determine the length of the review (Blurb) column and did a len function to determine that total.
+- Word Frequency - Initily placed the review (Blurb) column into a word cloud generator to determine the most frequenly used words.  
+                Had to normalize some of the words as they were standard throughout all reviews (i.e., Finished, UPC, JAN, EAN)
+                Once the word list was identified, programed to count the number of occurance in each reivew for each word.  
+- Bar Code Split - The bar code information was part of the review (Blurb) and was typically found at the end of each review. 
+                Created another column and did another split on the reivew to place the bar code info into the newly created column.
+
+Database Struction: Mongo was used to store this dataset into a database.  
+
+Future Questions for Analysis:  This dataset was built to help answer the following questions.
+    1. Which continents manufacture better tasting ramen based on reviews?
+    2. Which countries manufacture better tasting ramen based on reviews? 
+    3. Are there particular words that are associated with a positive or a negative rating?
+    4. Does the length (word count) of a review rating equate to a positive or negative rating?
+    5. With the provided bar code information, how does price impact the ratings.  
+********************************************
+
+
 
 Our ETL project is using data concerning ramen ratings from different countries in order to determine if there are any trends that contribute to a good rating vs a bad rating. First, two csv files were pulled and added together. This was done because one csv had a column that the other lacked and vice versa. Next, the data was scraped from https://www.theramenrater.com/ based on the 'URL' column. It is important to note that there were no unique class identifiers and no predictable paragraphs per page which complicated this process. Some questions that could be potentially answered from this data include;
 Which continents manufacture better tasting ramen?
